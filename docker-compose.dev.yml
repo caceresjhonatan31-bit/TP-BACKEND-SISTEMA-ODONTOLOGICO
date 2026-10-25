@@ -1,0 +1,32 @@
+services:
+  db-turno-usuarios:
+    image: postgres:16-alpine
+    container_name: pg_turno_usuarios
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db_turno_usuarios
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5433:5432"
+    volumes:
+      # 1. Ejecuta el script SQL el día 1 para crear las tablas
+      - ./database/init-turno-usuarios.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # 2. Guarda los datos físicos reales dentro de tu carpeta 'data'
+      - ./data/turno-usuarios:/var/lib/postgresql/data
+
+  db-pacientes-practicas:
+    image: postgres:16-alpine
+    container_name: pg_pacientes_practicas
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db_pacientes_practicas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5434:5432"
+    volumes:
+      # 1. Ejecuta el script SQL el día 1 para crear las tablas
+      - ./database/init-pacientes-practicas.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # 2. Guarda los datos físicos reales dentro de tu carpeta 'data'
+      - ./data/pacientes-practicas:/var/lib/postgresql/data

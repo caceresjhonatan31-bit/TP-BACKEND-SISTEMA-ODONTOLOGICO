@@ -1,4 +1,4 @@
-# Datos físicos locales de PostgreSQL
 data/
 target/
 .m2/
+**/target/

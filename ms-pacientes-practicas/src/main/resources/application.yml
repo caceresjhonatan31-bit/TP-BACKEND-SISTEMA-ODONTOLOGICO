@@ -1,0 +1,18 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ms-pacientes-practicas
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5434/db_pacientes_practicas
+    username: postgres
+    password: password123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # Valida que las entidades coincidan con las tablas SQL ya creadas
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

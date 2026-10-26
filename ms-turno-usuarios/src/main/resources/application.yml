@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ms-turno-usuarios
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5433/db_turno_usuarios
+    username: postgres
+    password: password123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# URLs para comunicación entre microservicios y API Pública Externa
+clients:
+  pacientes-practicas:
+    url: http://localhost:8082
+  feriados-api:
+    url: https://api.argentinadatos.com/v1/feriados

@@ -1,0 +1,34 @@
+"""EL DOCKER FILE LO HACEMOS AL FINAL""" PORQUE SI NO CADA VEZ QUE SE EJECUTE SE VA A INICIAR 
+UNA IMAGEN NUEVA POR LO QUE CADA CAMBIO QUE HAGAMOS NOS VA A COSTAR MUCHO TIEMPO EN EJECUTARSE
+
+ms-pacientes-practicas/
+├── Dockerfile
+├── pom.xml                         # Incluye la dependencia de 'common-excepciones', JPA, PostgreSQL, OpenAPI
+└── src/main/
+    ├── java/com/consultorio/pacientespracticas/
+    │   ├── MsPacientesPracticasApplication.java
+    │   ├── config/
+    │   │   ├── SecurityConfig.java             # Bloquea acceso a evoluciones si el rol != ODONTOLOGO
+    │   │   └── OpenApiConfig.java              # Documentación Swagger / OpenAPI
+    │   ├── controller/
+    │   │   ├── PacienteController.java
+    │   │   ├── EvolucionClinicaController.java # Endpoints exclusivos para el rol ODONTOLOGO
+    │   │   └── PracticaOdontologicaController.java
+    │   ├── service/
+    │   │   ├── PacienteService.java
+    │   │   ├── EvolucionClinicaService.java
+    │   │   └── PracticaOdontologicaService.java
+    │   ├── repository/
+    │   │   ├── PacienteRepository.java
+    │   │   ├── EvolucionClinicaRepository.java
+    │   │   └── PracticaOdontologicaRepository.java
+    │   ├── model/                              # Entidades JPA (@Entity) mapeadas a db_pacientes_practicas
+    │   │   ├── Paciente.java
+    │   │   ├── EvolucionClinica.java           # Incluye turnoDesdeId, turnoHastaId y diagnostico
+    │   │   └── PracticaOdontologica.java
+    │   └── dto/
+    │       ├── request/
+    │       └── response/
+    └── resources/
+        ├── application.yml                     # Apunta a localhost:5434 (para programar en el IDE)
+        └── application-docker.yml              # Apunta a db-pacientes-practicas:5432 (para el despliegue final)

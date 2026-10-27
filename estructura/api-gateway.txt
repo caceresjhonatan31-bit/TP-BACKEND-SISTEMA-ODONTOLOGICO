@@ -1,0 +1,14 @@
+"""EL DOCKER FILE LO HACEMOS AL FINAL""" PORQUE SI NO CADA VEZ QUE SE EJECUTE SE VA A INICIAR 
+UNA IMAGEN NUEVA POR LO QUE CADA CAMBIO QUE HAGAMOS NOS VA A COSTAR MUCHO TIEMPO EN EJECUTARSE
+
+api-gateway/
+├── Dockerfile                      
+├── pom.xml                         # Dependencias: Spring Cloud Gateway, OAuth2 Resource Server
+└── src/main/
+    ├── java/com/consultorio/gateway/
+    │   ├── ApiGatewayApplication.java
+    │   └── config/
+    │       └── SecurityFilterConfig.java       # Filtro de seguridad OIDC/JWT y validación de rutas
+    └── resources/
+        ├── application.yml                     # Configuración de rutas (/api/turnos/**, /api/pacientes/**)
+        └── application-docker.yml              # Perfil para apuntar a nombres de contenedores en Docker

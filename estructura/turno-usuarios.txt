@@ -1,0 +1,42 @@
+"""EL DOCKER FILE LO HACEMOS AL FINAL""" PORQUE SI NO CADA VEZ QUE SE EJECUTE SE VA A INICIAR 
+UNA IMAGEN NUEVA POR LO QUE CADA CAMBIO QUE HAGAMOS NOS VA A COSTAR MUCHO TIEMPO EN EJECUTARSE
+
+ms-turno-usuarios/
+├── Dockerfile
+├── pom.xml                         # Incluye la dependencia de 'common-excepciones', JPA, PostgreSQL, OpenAPI
+└── src/main/
+    ├── java/com/consultorio/turnousuarios/
+    │   ├── MsTurnoUsuariosApplication.java
+    │   ├── config/
+    │   │   ├── SecurityConfig.java             # Extracción de roles JWT y permisos (@PreAuthorize)
+    │   │   ├── OpenApiConfig.java              # Documentación Swagger / OpenAPI exigida por la cátedra
+    │   │   └── RestClientConfig.java           # Configuración de RestClient / FeignClient (con Timeouts)
+    │   ├── client/                             # Colaboración externa e inter-servicio
+    │   │   ├── PacientesPracticasClient.java   # Valida paciente activo y existencia de prácticas vía REST
+    │   │   └── FeriadosNacionalesClient.java   # Consume la API pública de Feriados de Argentina
+    │   ├── controller/
+    │   │   ├── TurnoController.java
+    │   │   └── UsuarioController.java
+    │   ├── service/
+    │   │   ├── TurnoService.java               # Reglas: no superposición, feriados, tolerancia 15 min
+    │   │   ├── TurnoSchedulerService.java      # @Scheduled para pasar a INASISTIDO y CANCELADO al final del día
+    │   │   └── UsuarioService.java
+    │   ├── repository/
+    │   │   ├── TurnoRepository.java
+    │   │   ├── TurnoPracticaRealizadaRepository.java
+    │   │   ├── UsuarioRepository.java
+    │   │   └── DisponibilidadOdontologoRepository.java
+    │   ├── model/                              # Entidades JPA (@Entity) mapeadas a db_turno_usuarios
+    │   │   ├── Usuario.java
+    │   │   ├── DisponibilidadOdontologo.java
+    │   │   ├── Turno.java
+    │   │   ├── TurnoPracticaRealizada.java
+    │   │   └── enums/
+    │   │       ├── RolUsuario.java
+    │   │       └── EstadoTurno.java
+    │   └── dto/                                # Objetos de entrada/salida con validaciones (@Valid, @NotNull)
+    │       ├── request/
+    │       └── response/
+    └── resources/
+        ├── application.yml                     # Apunta a localhost:5433 (para programar en el IDE)
+        └── application-docker.yml              # Apunta a db-turno-usuarios:5432 (para el despliegue final)

@@ -10,5 +10,5 @@ api-gateway/
     │   └── config/
     │       └── SecurityFilterConfig.java       # Filtro de seguridad OIDC/JWT y validación de rutas
     └── resources/
-        ├── application.yml                     # Configuración de rutas (/api/turnos/**, /api/pacientes/**)
+        ├── application.yml                     # Rutas: /api/turnos/**, /api/usuarios/**, /api/pacientes/**, /api/practicas/**, /api/evoluciones/**
         └── application-docker.yml              # Perfil para apuntar a nombres de contenedores en Docker

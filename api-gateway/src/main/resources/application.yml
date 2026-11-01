@@ -7,11 +7,11 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: ms-turno-usuarios
+        - id: ms-agenda-usuarios
           uri: http://localhost:8081
           predicates:
-            - Path=/api/turnos/**, /api/usuarios/**
-        - id: ms-pacientes-practicas
+            - Path=/api/turnos/**, /api/usuarios/**, /api/disponibilidades/**
+        - id: ms-atencion-clinica
           uri: http://localhost:8082
           predicates:
-            - Path=/api/pacientes/**, /api/practicas/**
+            - Path=/api/pacientes/**, /api/practicas/**, /api/evoluciones/**, /api/atencion-clinica/**

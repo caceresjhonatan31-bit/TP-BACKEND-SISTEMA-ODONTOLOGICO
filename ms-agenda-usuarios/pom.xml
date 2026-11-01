@@ -12,16 +12,15 @@
     </parent>
 
     <groupId>com.consultorio</groupId>
-    <artifactId>ms-pacientes-practicas</artifactId>
+    <artifactId>ms-agenda-usuarios</artifactId>
     <version>1.0.0</version>
-    <name>ms-pacientes-practicas</name>
+    <name>ms-agenda-usuarios</name>
 
     <properties>
         <java.version>21</java.version>
     </properties>
 
     <dependencies>
-        <!-- Nuestro componente común reutilizable -->
         <dependency>
             <groupId>com.consultorio</groupId>
             <artifactId>common-excepciones</artifactId>
@@ -46,7 +45,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Documentación OpenAPI / Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -63,3 +61,4 @@
         </plugins>
     </build>
 </project>
+

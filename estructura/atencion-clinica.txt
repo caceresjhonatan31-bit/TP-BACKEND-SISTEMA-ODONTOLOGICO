@@ -1,0 +1,50 @@
+"""EL DOCKER FILE LO HACEMOS AL FINAL""" PORQUE SI NO CADA VEZ QUE SE EJECUTE SE VA A INICIAR 
+UNA IMAGEN NUEVA POR LO QUE CADA CAMBIO QUE HAGAMOS NOS VA A COSTAR MUCHO TIEMPO EN EJECUTARSE
+
+ms-atencion-clinica/
+├── Dockerfile
+├── pom.xml                         # Incluye la dependencia de 'common-excepciones', JPA, PostgreSQL, OpenAPI
+└── src/main/
+    ├── java/com/consultorio/atencionclinica/
+    │   ├── MsAtencionClinicaApplication.java
+    │   ├── config/
+    │   │   ├── SecurityConfig.java             # Control de acceso por rol (Evoluciones exclusivas de ODONTOLOGO)
+    │   │   ├── OpenApiConfig.java              # Documentación Swagger / OpenAPI
+    │   │   └── RestClientConfig.java           # Configuración de RestClient (comunicación con ms-agenda-usuarios)
+    │   ├── client/
+    │   │   └── AgendaUsuariosClient.java       # Consulta datos de turnos y valida odontólogo en ms-agenda-usuarios
+    │   ├── controller/
+    │   │   ├── PacienteController.java
+    │   │   ├── PracticaOdontologicaController.java
+    │   │   ├── EvolucionClinicaController.java # Endpoints exclusivos para ODONTOLOGO
+    │   │   └── TurnoPracticaRealizadaController.java # Gestión de prácticas efectuadas ligadas al acto médico
+    │   ├── service/
+    │   │   ├── PacienteService.java
+    │   │   ├── PracticaOdontologicaService.java
+    │   │   ├── EvolucionClinicaService.java    # Registra acto médico y vincula prácticas realizadas
+    │   │   └── TurnoPracticaRealizadaService.java
+    │   ├── repository/
+    │   │   ├── PacienteRepository.java
+    │   │   ├── PracticaOdontologicaRepository.java
+    │   │   ├── EvolucionClinicaRepository.java
+    │   │   └── TurnoPracticaRealizadaRepository.java # Ahora reside aquí en db_atencion_clinica
+    │   ├── model/                              # Entidades JPA (@Entity) mapeadas a db_atencion_clinica
+    │   │   ├── Paciente.java
+    │   │   ├── PracticaOdontologica.java
+    │   │   ├── EvolucionClinica.java           # Relación 1:N con TurnoPracticaRealizada
+    │   │   └── TurnoPracticaRealizada.java     # Vinculada a EvolucionClinica y PracticaOdontologica (FKs físicas)
+    │   └── dto/
+    │       ├── request/
+    │       │   ├── PacienteRequestDTO.java
+    │       │   ├── PracticaOdontologicaRequestDTO.java
+    │       │   ├── EvolucionClinicaRequestDTO.java
+    │       │   └── TurnoPracticaRealizadaRequestDTO.java
+    │       └── response/
+    │           ├── PacienteResponseDTO.java
+    │           ├── PracticaOdontologicaResponseDTO.java
+    │           ├── EvolucionClinicaResponseDTO.java
+    │           └── TurnoPracticaRealizadaResponseDTO.java
+    └── resources/
+        ├── application.yml                     # Apunta a localhost:5434 (db_atencion_clinica)
+        └── application-docker.yml              # Apunta a db-atencion-clinica:5432 (para Docker)
+

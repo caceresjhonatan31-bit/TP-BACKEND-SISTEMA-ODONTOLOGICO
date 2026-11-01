@@ -3,9 +3,9 @@ server:
 
 spring:
   application:
-    name: ms-turno-usuarios
+    name: ms-agenda-usuarios
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5433/db_turno_usuarios
+    url: jdbc:postgresql://127.0.0.1:5433/db_agenda_usuarios
     username: postgres
     password: password123
     driver-class-name: org.postgresql.Driver
@@ -17,9 +17,10 @@ spring:
       hibernate:
         format_sql: true
 
-# URLs para comunicación entre microservicios y API Pública Externa
+# URLs para comunicación inter-servicio y API Externa
 clients:
-  pacientes-practicas:
+  atencion-clinica:
     url: http://localhost:8082
   feriados-api:
     url: https://api.argentinadatos.com/v1/feriados
+

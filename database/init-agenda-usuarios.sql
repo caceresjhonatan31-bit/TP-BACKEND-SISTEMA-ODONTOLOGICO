@@ -1,5 +1,7 @@
 -- ==========================================================
--- SCRIPT DE INICIALIZACIÓN: db_turno_usuarios (PostgreSQL)
+-- SCRIPT DE INICIALIZACIÓN: db_agenda_usuarios (PostgreSQL)
+-- Microservicio 1: ms-agenda-usuarios (Agenda Operativa)
+-- Administra personal, disponibilidad y reserva horaria
 -- ==========================================================
 
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -45,15 +47,15 @@ CREATE TABLE IF NOT EXISTS disponibilidad_odontologos (
 
 CREATE TABLE IF NOT EXISTS turnos (
     id BIGSERIAL PRIMARY KEY,
-    paciente_id BIGINT NOT NULL, -- Referencia lógica a pacientes.id (db_pacientes_practicas)
+    paciente_id BIGINT NOT NULL, -- Referencia lógica a pacientes.id (db_atencion_clinica)
     odontologo_id BIGINT NOT NULL, -- FK física a usuarios.id
-    creado_por_usuario_id BIGINT NOT NULL, -- FK física a usuarios.id (auditoría)
-    practica_inicial_id BIGINT, -- Referencia lógica a practicas_odontologicas.id (db_pacientes_practicas)
+    creado_por_usuario_id BIGINT NOT NULL, -- FK física a usuarios.id (auditoría / recepcionista o admin)
+    practica_inicial_id BIGINT, -- Referencia lógica a practicas_odontologicas.id (db_atencion_clinica) pactada para el turno
     fecha DATE NOT NULL,
     hora_inicio TIME NOT NULL,
     hora_fin TIME NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'PROGRAMADO',
-    nota_turno TEXT, -- Nota aclaratoria opcional al asignar el turno
+    nota_turno TEXT, -- Nota u observación opcional al solicitar/asignar el turno
     fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_turnos_odontologo FOREIGN KEY (odontologo_id) REFERENCES usuarios (id) ON DELETE RESTRICT,
     CONSTRAINT fk_turnos_creado_por FOREIGN KEY (creado_por_usuario_id) REFERENCES usuarios (id) ON DELETE RESTRICT,
@@ -66,15 +68,6 @@ CREATE TABLE IF NOT EXISTS turnos (
         )
     ),
     CONSTRAINT chk_turno_rango_horario CHECK (hora_fin > hora_inicio)
-);
-
-CREATE TABLE IF NOT EXISTS turno_practicas_realizadas (
-    id BIGSERIAL PRIMARY KEY,
-    turno_id BIGINT NOT NULL,
-    practica_id BIGINT NOT NULL, -- Referencia lógica a practicas_odontologicas.id (db_pacientes_practicas)
-    nota_aclaratoria TEXT, -- Nota opcional del odontólogo post-atención
-    fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_tpr_turno FOREIGN KEY (turno_id) REFERENCES turnos (id) ON DELETE CASCADE
 );
 
 -- Índices para búsquedas de personal, validación de superposición horaria e historial
@@ -91,3 +84,4 @@ CREATE INDEX idx_turnos_validacion_superposicion ON turnos (
 );
 
 CREATE INDEX idx_turnos_historial_paciente ON turnos (paciente_id, id, fecha DESC);
+

@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de salida con los datos de una práctica del nomenclador odontológico.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

@@ -7,6 +7,7 @@ import com.consultorio.atencionclinica.model.PracticaOdontologica;
 import com.consultorio.atencionclinica.repository.PracticaOdontologicaRepository;
 import com.consultorio.common.exception.ConflictException;
 import com.consultorio.common.exception.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * RN-10 / RN-11: Solo las prácticas con activo = true pueden usarse en actos médicos.
  * La baja es lógica: inhabilita la práctica para turnos futuros conservando el historial.
  */
+@Slf4j
 @Service
 @Transactional
 public class PracticaOdontologicaService {
@@ -32,10 +34,12 @@ public class PracticaOdontologicaService {
 
     /**
      * Agrega una nueva práctica al nomenclador.
-     * Lanza {@link ConflictException} si el código nomenclador ya existe.
      */
     public PracticaOdontologicaResponseDTO crearPractica(PracticaOdontologicaRequestDTO dto) {
+        log.debug("Iniciando validación para crear práctica con código: {}", dto.getCodigoNomenclador());
+
         if (practicaRepository.existsByCodigoNomenclador(dto.getCodigoNomenclador())) {
+            log.warn("Rechazo de creación: Código nomenclador '{}' duplicado", dto.getCodigoNomenclador());
             throw new ConflictException(
                     "Ya existe una práctica con el código nomenclador: " + dto.getCodigoNomenclador());
         }
@@ -46,18 +50,22 @@ public class PracticaOdontologicaService {
         nueva.setDescripcion(dto.getDescripcion());
         nueva.setActivo(true);
 
-        return toResponseDTO(practicaRepository.save(nueva));
+        PracticaOdontologica guardada = practicaRepository.save(nueva);
+        log.info("Práctica creada exitosamente con ID: {}, código: {}", guardada.getId(), guardada.getCodigoNomenclador());
+        return toResponseDTO(guardada);
     }
 
     // ── Consultas ─────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public PracticaOdontologicaResponseDTO obtenerPorId(Long id) {
+        log.debug("Consultando práctica por ID: {}", id);
         return toResponseDTO(buscarPorIdOLanzar(id));
     }
 
     @Transactional(readOnly = true)
     public List<PracticaOdontologicaResponseDTO> listarTodas() {
+        log.debug("Consultando catálogo completo de prácticas");
         return practicaRepository.findAll()
                 .stream()
                 .map(this::toResponseDTO)
@@ -66,6 +74,7 @@ public class PracticaOdontologicaService {
 
     @Transactional(readOnly = true)
     public List<PracticaOdontologicaResponseDTO> listarActivas() {
+        log.debug("Consultando catálogo de prácticas activas");
         return practicaRepository.findByActivoTrue()
                 .stream()
                 .map(this::toResponseDTO)
@@ -76,13 +85,15 @@ public class PracticaOdontologicaService {
 
     /**
      * Actualiza los datos descriptivos de una práctica del nomenclador.
-     * Si se cambia el código, verifica que el nuevo no esté en uso.
      */
     public PracticaOdontologicaResponseDTO actualizarPractica(Long id, PracticaOdontologicaRequestDTO dto) {
+        log.debug("Iniciando validación para actualizar práctica ID: {}", id);
         PracticaOdontologica practica = buscarPorIdOLanzar(id);
 
         if (!practica.getCodigoNomenclador().equals(dto.getCodigoNomenclador())
                 && practicaRepository.existsByCodigoNomenclador(dto.getCodigoNomenclador())) {
+            log.warn("Rechazo de actualización en práctica ID {}: Código nomenclador '{}' ya en uso",
+                    id, dto.getCodigoNomenclador());
             throw new ConflictException(
                     "El código nomenclador '" + dto.getCodigoNomenclador() + "' ya está en uso.");
         }
@@ -91,39 +102,48 @@ public class PracticaOdontologicaService {
         practica.setNombre(dto.getNombre());
         practica.setDescripcion(dto.getDescripcion());
 
-        return toResponseDTO(practicaRepository.save(practica));
+        PracticaOdontologica actualizada = practicaRepository.save(practica);
+        log.info("Práctica ID {} actualizada exitosamente", actualizada.getId());
+        return toResponseDTO(actualizada);
     }
 
     // ── Baja / Reactivación lógica ───────────────────────────────────────────
 
-    /** Inhabilita una práctica para nuevos turnos. No elimina el historial. */
+    /** Inhabilita una práctica para nuevos turnos. */
     public void darDeBaja(Long id) {
+        log.debug("Iniciando inhabilitación de práctica ID: {}", id);
         PracticaOdontologica practica = buscarPorIdOLanzar(id);
         if (!practica.getActivo()) {
+            log.warn("Rechazo de inhabilitación: Práctica ID {} ya está inhabilitada", id);
             throw new ConflictException("La práctica con ID " + id + " ya está inhabilitada.");
         }
         practica.setActivo(false);
         practicaRepository.save(practica);
+        log.info("Práctica ID {} inhabilitada exitosamente (baja lógica)", id);
     }
 
     /** Reactiva una práctica inhabilitada para que pueda volver a asignarse. */
     public PracticaOdontologicaResponseDTO reactivarPractica(Long id) {
+        log.debug("Iniciando reactivación de práctica ID: {}", id);
         PracticaOdontologica practica = buscarPorIdOLanzar(id);
         if (practica.getActivo()) {
+            log.warn("Rechazo de habilitación: Práctica ID {} ya está activa", id);
             throw new ConflictException("La práctica con ID " + id + " ya está activa.");
         }
         practica.setActivo(true);
-        return toResponseDTO(practicaRepository.save(practica));
+        PracticaOdontologica reactivada = practicaRepository.save(practica);
+        log.info("Práctica ID {} habilitada exitosamente", reactivada.getId());
+        return toResponseDTO(reactivada);
     }
 
     // ── Validación inter-servicio ─────────────────────────────────────────────
 
     /**
      * Verifica si una práctica existe y está vigente (activo = true).
-     * Consumido por ms-agenda-usuarios: GET /api/practicas/{id}/validar-activa.
      */
     @Transactional(readOnly = true)
     public ValidacionVigenciaResponseDTO validarPracticaActiva(Long id) {
+        log.debug("Validando estado de vigencia para práctica ID: {}", id);
         return practicaRepository.findById(id)
                 .map(p -> ValidacionVigenciaResponseDTO.builder()
                         .id(p.getId())
@@ -143,14 +163,18 @@ public class PracticaOdontologicaService {
 
     private PracticaOdontologica buscarPorIdOLanzar(Long id) {
         return practicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "No se encontró ninguna práctica con ID: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Práctica ID {} no encontrada en base de datos", id);
+                    return new ResourceNotFoundException("No se encontró ninguna práctica con ID: " + id);
+                });
     }
 
     public PracticaOdontologica buscarEntidadPorIdActivaOLanzar(Long id) {
         return practicaRepository.findByIdAndActivoTrue(id)
-                .orElseThrow(() -> new ConflictException(
-                        "La práctica con ID " + id + " no existe o está inhabilitada (RN-10)."));
+                .orElseThrow(() -> {
+                    log.warn("Práctica ID {} no disponible o inhabilitada para acto médico (RN-10)", id);
+                    return new ConflictException("La práctica con ID " + id + " no existe o está inhabilitada (RN-10).");
+                });
     }
 
     private PracticaOdontologicaResponseDTO toResponseDTO(PracticaOdontologica p) {

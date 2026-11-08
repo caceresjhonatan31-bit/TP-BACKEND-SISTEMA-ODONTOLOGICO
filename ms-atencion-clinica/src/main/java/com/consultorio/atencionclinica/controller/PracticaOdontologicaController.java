@@ -6,6 +6,7 @@ import com.consultorio.atencionclinica.dto.response.ValidacionVigenciaResponseDT
 import com.consultorio.atencionclinica.service.PracticaOdontologicaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
  * Mapeo: /api/practicas
  * RN-10, RN-11: Catálogo nomenclado y vigencia de prestaciones.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/practicas")
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class PracticaOdontologicaController {
     @PostMapping
     public ResponseEntity<PracticaOdontologicaResponseDTO> crearPractica(
             @Valid @RequestBody PracticaOdontologicaRequestDTO dto) {
+        log.info("[POST] /api/practicas - Solicitud de creación de práctica nomenclada: {}", dto.getCodigoNomenclador());
         PracticaOdontologicaResponseDTO nueva = practicaService.crearPractica(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
@@ -35,6 +38,7 @@ public class PracticaOdontologicaController {
     @GetMapping
     public ResponseEntity<List<PracticaOdontologicaResponseDTO>> listarPracticas(
             @RequestParam(defaultValue = "true") boolean soloActivas) {
+        log.info("[GET] /api/practicas - Listado de prácticas (soloActivas: {})", soloActivas);
         List<PracticaOdontologicaResponseDTO> practicas = soloActivas
                 ? practicaService.listarActivas()
                 : practicaService.listarTodas();
@@ -43,6 +47,7 @@ public class PracticaOdontologicaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PracticaOdontologicaResponseDTO> obtenerPorId(@PathVariable Long id) {
+        log.info("[GET] /api/practicas/{} - Consulta de práctica por ID", id);
         return ResponseEntity.ok(practicaService.obtenerPorId(id));
     }
 
@@ -50,22 +55,26 @@ public class PracticaOdontologicaController {
     public ResponseEntity<PracticaOdontologicaResponseDTO> actualizarPractica(
             @PathVariable Long id,
             @Valid @RequestBody PracticaOdontologicaRequestDTO dto) {
+        log.info("[PUT] /api/practicas/{} - Solicitud de actualización de práctica", id);
         return ResponseEntity.ok(practicaService.actualizarPractica(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> inhabilitarPractica(@PathVariable Long id) {
+        log.info("[DELETE] /api/practicas/{} - Solicitud de inhabilitación de práctica", id);
         practicaService.darDeBaja(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/habilitar")
     public ResponseEntity<PracticaOdontologicaResponseDTO> reactivarPractica(@PathVariable Long id) {
+        log.info("[PATCH] /api/practicas/{}/habilitar - Solicitud de habilitación de práctica", id);
         return ResponseEntity.ok(practicaService.reactivarPractica(id));
     }
 
     @GetMapping("/{id}/validar-activa")
     public ResponseEntity<ValidacionVigenciaResponseDTO> validarPracticaActiva(@PathVariable Long id) {
+        log.info("[GET] /api/practicas/{}/validar-activa - Validación inter-servicio de práctica", id);
         return ResponseEntity.ok(practicaService.validarPracticaActiva(id));
     }
 }

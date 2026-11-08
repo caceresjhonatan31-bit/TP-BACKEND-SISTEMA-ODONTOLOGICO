@@ -7,13 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de entrada para registrar una práctica efectivamente realizada durante una consulta.
- *
- * RN-10: La práctica referenciada por practicaId debe tener activo = true.
- * RN-11: El odontólogo registra las prácticas realizadas durante la atención.
- * RN-16: odontologoId es clave para la validación de acceso a la historia clínica.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

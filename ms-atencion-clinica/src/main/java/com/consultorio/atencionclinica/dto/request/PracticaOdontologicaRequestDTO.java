@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de entrada para crear o actualizar una práctica en el nomenclador odontológico.
- * RN-10 / RN-11: solo prácticas activas pueden registrarse en actos médicos.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

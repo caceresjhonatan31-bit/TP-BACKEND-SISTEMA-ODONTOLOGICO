@@ -8,11 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de entrada para crear o actualizar un paciente.
- * RN-13: el DNI es la clave de negocio que permite detectar pacientes dados de baja
- * y reactivarlos en lugar de crear un duplicado.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

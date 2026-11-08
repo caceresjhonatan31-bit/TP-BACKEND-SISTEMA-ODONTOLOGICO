@@ -9,14 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de entrada para registrar o actualizar una nota evolutiva clínica.
- *
- * RN-15: turnoHastaId es opcional. Si se envía, el servicio validará que
- *         turnoHastaId >= turnoDesdeId (la constraint SQL es el último respaldo).
- * RN-16: actualizadoPorOdontologoId identifica al profesional responsable;
- *         el acceso a la historia se verifica en la capa de servicio.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

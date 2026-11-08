@@ -11,6 +11,7 @@ import com.consultorio.atencionclinica.repository.PacienteRepository;
 import com.consultorio.atencionclinica.repository.TurnoPracticaRealizadaRepository;
 import com.consultorio.common.exception.ConflictException;
 import com.consultorio.common.exception.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * RN-15: Continuidad de sesiones clínicas (turnoHastaId >= turnoDesdeId).
  * RN-16: Confidencialidad en el acceso a diagnósticos y evoluciones médicas.
  */
+@Slf4j
 @Service
 @Transactional
 public class EvolucionClinicaService {
@@ -47,17 +49,24 @@ public class EvolucionClinicaService {
      * Verifica la correspondencia del turno en ms-agenda-usuarios.
      */
     public EvolucionClinicaResponseDTO registrarEvolucion(EvolucionClinicaRequestDTO dto) {
+        log.debug("Iniciando validaciones para registrar evolución (paciente ID: {}, turnoDesdeId: {}, turnoHastaId: {})",
+                dto.getPacienteId(), dto.getTurnoDesdeId(), dto.getTurnoHastaId());
+
         // 1. Validar RN-15: Rango cronológico coherente entre turnos
         validarRangoTurnos(dto.getTurnoDesdeId(), dto.getTurnoHastaId());
 
         // 2. Validar Paciente
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "No se encontró ningún paciente con ID: " + dto.getPacienteId()));
+                .orElseThrow(() -> {
+                    log.warn("Rechazo de evolución clínica: Paciente ID {} no encontrado", dto.getPacienteId());
+                    return new ResourceNotFoundException("No se encontró ningún paciente con ID: " + dto.getPacienteId());
+                });
 
         // 3. Validar Turno en ms-agenda-usuarios
         TurnoExternalDTO turno = agendaUsuariosClient.obtenerTurno(dto.getTurnoDesdeId());
         if (!turno.getPacienteId().equals(dto.getPacienteId())) {
+            log.warn("Rechazo de evolución clínica: Turno inicial ID {} pertenece a paciente ID {}, recibido ID {}",
+                    dto.getTurnoDesdeId(), turno.getPacienteId(), dto.getPacienteId());
             throw new ConflictException(
                     "El turno inicial con ID " + dto.getTurnoDesdeId() + " pertenece al paciente ID " +
                     turno.getPacienteId() + ", pero se asoció con paciente ID " + dto.getPacienteId());
@@ -67,6 +76,8 @@ public class EvolucionClinicaService {
         if (dto.getTurnoHastaId() != null && !dto.getTurnoHastaId().equals(dto.getTurnoDesdeId())) {
             TurnoExternalDTO turnoHasta = agendaUsuariosClient.obtenerTurno(dto.getTurnoHastaId());
             if (!turnoHasta.getPacienteId().equals(dto.getPacienteId())) {
+                log.warn("Rechazo de evolución clínica: Turno final ID {} pertenece a paciente ID {}, recibido ID {}",
+                        dto.getTurnoHastaId(), turnoHasta.getPacienteId(), dto.getPacienteId());
                 throw new ConflictException(
                         "El turno de cierre con ID " + dto.getTurnoHastaId() + " pertenece al paciente ID " +
                         turnoHasta.getPacienteId() + ", pero se asoció con paciente ID " + dto.getPacienteId());
@@ -82,7 +93,11 @@ public class EvolucionClinicaService {
         ec.setDiagnostico(dto.getDiagnostico());
         ec.setEvolucionTexto(dto.getEvolucionTexto());
 
-        return toResponseDTO(evolucionClinicaRepository.save(ec));
+        EvolucionClinica guardada = evolucionClinicaRepository.save(ec);
+        log.info("Evolución clínica registrada exitosamente con ID: {} para paciente ID: {}",
+                guardada.getId(), guardada.getPaciente().getId());
+
+        return toResponseDTO(guardada);
     }
 
     /**
@@ -90,9 +105,13 @@ public class EvolucionClinicaService {
      * RN-15: Si se modifica el rango de turnos, valida coherencia.
      */
     public EvolucionClinicaResponseDTO actualizarEvolucion(Long id, EvolucionClinicaRequestDTO dto) {
+        log.debug("Iniciando validación para actualizar evolución clínica ID: {}", id);
+
         EvolucionClinica ec = evolucionClinicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "No se encontró ninguna evolución clínica con ID: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Evolución clínica ID {} no encontrada para actualización", id);
+                    return new ResourceNotFoundException("No se encontró ninguna evolución clínica con ID: " + id);
+                });
 
         validarRangoTurnos(dto.getTurnoDesdeId(), dto.getTurnoHastaId());
 
@@ -102,7 +121,10 @@ public class EvolucionClinicaService {
         ec.setDiagnostico(dto.getDiagnostico());
         ec.setEvolucionTexto(dto.getEvolucionTexto());
 
-        return toResponseDTO(evolucionClinicaRepository.save(ec));
+        EvolucionClinica actualizada = evolucionClinicaRepository.save(ec);
+        log.info("Evolución clínica ID {} actualizada exitosamente", actualizada.getId());
+
+        return toResponseDTO(actualizada);
     }
 
     /**
@@ -111,7 +133,11 @@ public class EvolucionClinicaService {
      */
     @Transactional(readOnly = true)
     public List<EvolucionClinicaResponseDTO> listarPorPaciente(Long pacienteId, Long odontologoIdSolicitante, boolean esAdmin) {
+        log.debug("Verificando autorización RN-16 para consultar historial clínico de paciente ID {} (odontologoId: {}, esAdmin: {})",
+                pacienteId, odontologoIdSolicitante, esAdmin);
+
         if (!pacienteRepository.existsById(pacienteId)) {
+            log.warn("Paciente ID {} no encontrado para consultar historial clínico", pacienteId);
             throw new ResourceNotFoundException("No se encontró ningún paciente con ID: " + pacienteId);
         }
 
@@ -119,6 +145,8 @@ public class EvolucionClinicaService {
             boolean atendio = evolucionClinicaRepository.existsByPacienteIdAndActualizadoPorOdontologoId(pacienteId, odontologoIdSolicitante)
                     || turnoPracticaRealizadaRepository.existsByPacienteIdAndOdontologoId(pacienteId, odontologoIdSolicitante);
             if (!atendio) {
+                log.warn("Rechazo de acceso a historia clínica (RN-16): Odontólogo ID {} no registra atenciones con paciente ID {}",
+                        odontologoIdSolicitante, pacienteId);
                 throw new ConflictException(
                         "Acceso denegado: El odontólogo ID " + odontologoIdSolicitante +
                         " no ha atendido al paciente ID " + pacienteId +
@@ -136,6 +164,7 @@ public class EvolucionClinicaService {
 
     private void validarRangoTurnos(Long turnoDesdeId, Long turnoHastaId) {
         if (turnoHastaId != null && turnoHastaId < turnoDesdeId) {
+            log.warn("Rechazo por regla RN-15: turnoHastaId ({}) es menor a turnoDesdeId ({})", turnoHastaId, turnoDesdeId);
             throw new ConflictException(
                     "El turno de cierre (turnoHastaId=" + turnoHastaId +
                     ") debe ser posterior o igual al turno de inicio (turnoDesdeId=" + turnoDesdeId +

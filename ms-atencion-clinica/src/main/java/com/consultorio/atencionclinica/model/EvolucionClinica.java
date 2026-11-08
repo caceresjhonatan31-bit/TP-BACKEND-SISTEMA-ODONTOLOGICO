@@ -3,20 +3,7 @@ package com.consultorio.atencionclinica.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Entidad JPA que representa la nota evolutiva clínica de un paciente.
- * Mapeada a la tabla `evoluciones_clinicas` en db_atencion_clinica.
- *
- * RN-15: turno_hasta_id es opcional (NULL = sesión única). Si se envía,
- *         debe cumplir turno_hasta_id >= turno_desde_id (enforced por CHECK en DB).
- * RN-16: La consulta de evoluciones es confidencial: solo ADMIN o el ODONTÓLOGO
- *         que atendió al paciente al menos una vez puede acceder.
- *
- * Relaciones inter-servicio (Logical FK — sin FK física cruzada):
- *   - turno_desde_id  → turnos.id  en db_agenda_usuarios
- *   - turno_hasta_id  → turnos.id  en db_agenda_usuarios
- *   - actualizado_por_odontologo_id → usuarios.id en db_agenda_usuarios
- */
+
 @Entity
 @Table(name = "evoluciones_clinicas")
 public class EvolucionClinica {
@@ -25,31 +12,19 @@ public class EvolucionClinica {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * FK física al paciente dentro de este mismo microservicio (db_atencion_clinica).
-     */
+    
+     //FK al paciente dentro de este mismo microservicio
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paciente_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_evolucion_paciente"))
     private Paciente paciente;
 
-    /**
-     * Referencia lógica al turno inicial del tratamiento en ms-agenda-usuarios.
-     * No existe FK física cruzada (patrón Database-per-Service).
-     */
     @Column(name = "turno_desde_id", nullable = false)
     private Long turnoDesdeId;
 
-    /**
-     * Referencia lógica al turno de cierre del tratamiento (nullable).
-     * NULL indica sesión única o tratamiento aún en curso (RN-15).
-     */
     @Column(name = "turno_hasta_id")
     private Long turnoHastaId;
 
-    /**
-     * Referencia lógica al odontólogo que registró/actualizó esta nota (en db_agenda_usuarios).
-     */
     @Column(name = "actualizado_por_odontologo_id", nullable = false)
     private Long actualizadoPorOdontologoId;
 
@@ -59,10 +34,6 @@ public class EvolucionClinica {
     @Column(name = "evolucion_texto", nullable = false, columnDefinition = "TEXT")
     private String evolucionTexto;
 
-    /**
-     * Timestamp de la última actualización de esta nota evolutiva.
-     * Columna: fecha_actualizacion (DER definitivo).
-     */
     @Column(name = "fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
 

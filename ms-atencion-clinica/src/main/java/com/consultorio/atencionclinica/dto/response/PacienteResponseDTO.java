@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO de salida con la ficha completa de un paciente.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

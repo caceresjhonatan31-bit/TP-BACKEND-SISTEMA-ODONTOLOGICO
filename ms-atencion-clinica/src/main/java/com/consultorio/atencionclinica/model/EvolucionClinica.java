@@ -50,6 +50,7 @@ public class EvolucionClinica {
     // ── Getters y Setters ────────────────────────────────────────────────────
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Paciente getPaciente() { return paciente; }
     public void setPaciente(Paciente paciente) { this.paciente = paciente; }

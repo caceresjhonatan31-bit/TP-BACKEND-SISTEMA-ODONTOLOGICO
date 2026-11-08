@@ -17,6 +17,16 @@ spring:
       hibernate:
         format_sql: true
 
+# Monitoreo de salud y métricas operativas
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, loggers
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     root: INFO

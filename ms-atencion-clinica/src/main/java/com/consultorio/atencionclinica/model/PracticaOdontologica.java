@@ -31,6 +31,7 @@ public class PracticaOdontologica {
     // ── Getters y Setters ────────────────────────────────────────────────────
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getCodigoNomenclador() { return codigoNomenclador; }
     public void setCodigoNomenclador(String codigoNomenclador) { this.codigoNomenclador = codigoNomenclador; }

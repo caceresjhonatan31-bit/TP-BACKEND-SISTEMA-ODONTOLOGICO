@@ -50,6 +50,7 @@ public class Paciente {
     // ── Getters y Setters ────────────────────────────────────────────────────
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getDni() { return dni; }
     public void setDni(String dni) { this.dni = dni; }

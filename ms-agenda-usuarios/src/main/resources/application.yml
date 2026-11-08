@@ -20,7 +20,20 @@ spring:
 # URLs para comunicación inter-servicio y API Externa
 clients:
   atencion-clinica:
-    url: http://localhost:8082
+    url: ${ATENCION_CLINICA_URL:http://localhost:8082}
+    enabled: ${ATENCION_CLINICA_VALIDATION_ENABLED:false}
   feriados-api:
-    url: https://api.argentinadatos.com/v1/feriados
+    url: ${FERIADOS_API_URL:https://api.argentinadatos.com/v1/feriados}
+
+# Integración Externa: Google Calendar API (RN-04 y F-04)
+google:
+  calendar:
+    enabled: ${GOOGLE_CALENDAR_ENABLED:true}
+    credentials-path: ${GOOGLE_CREDENTIALS_PATH:google-credentials.json}
+    application-name: ${GOOGLE_APPLICATION_NAME:Plataforma-Turnos-Odontologicos}
+    calendar-id: ${GOOGLE_CALENDAR_ID:primary}
+    holidays-calendar-id: ${GOOGLE_HOLIDAYS_CALENDAR_ID:es.ar#holiday@group.v.calendar.google.com}
+    zone-id: America/Argentina/Buenos_Aires
+    strict-mode: ${GOOGLE_CALENDAR_STRICT_MODE:false}
+
 

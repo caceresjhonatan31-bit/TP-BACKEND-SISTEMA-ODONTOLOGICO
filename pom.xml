@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.consultorio</groupId>
+    <artifactId>plataforma-turnos-odontologicos</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>plataforma-turnos-odontologicos</name>
+
+    <modules>
+        <module>common-excepciones</module>
+        <module>ms-agenda-usuarios</module>
+        <module>ms-atencion-clinica</module>
+        <module>api-gateway</module>
+    </modules>
+</project>
+

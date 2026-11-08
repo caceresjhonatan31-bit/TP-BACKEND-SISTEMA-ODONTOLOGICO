@@ -50,15 +50,57 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
         </dependency>
+
+        <!-- Google Calendar API & OAuth2 Service Account (RN-04) -->
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-calendar</artifactId>
+            <version>v3-rev20241101-2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+            <version>1.29.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
 </project>
-

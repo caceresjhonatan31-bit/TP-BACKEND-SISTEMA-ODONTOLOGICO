@@ -2,3 +2,12 @@ data/
 target/
 .m2/
 **/target/
+*~
+*.LCK*
+*.lck*
+.project
+.classpath
+.settings/
+.env
+google-credentials.json
+**/google-credentials.json

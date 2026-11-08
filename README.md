@@ -124,24 +124,15 @@ Verifica que los contenedores `pg_agenda_usuarios` y `pg_atencion_clinica` figur
 docker compose ps
 ```
 
-### Paso 2: Compilar e Instalar `common-excepciones` (¡Obligatorio!)
+### Paso 2: Compilar el Proyecto (POM Agregador Raíz)
 
-> ⚠️ **¡PASO CRÍTICO!**  
-> `ms-agenda-usuarios` y `ms-atencion-clinica` dependen de este paquete:
-> ```xml
-> <dependency>
->     <groupId>com.consultorio</groupId>
->     <artifactId>common-excepciones</artifactId>
->     <version>1.0.0</version>
-> </dependency>
-> ```
-> Debe compilarse e instalarse previamente en el repositorio local de Maven (`.m2`):
+Gracias al `pom.xml` agregador en la raíz del repositorio, puedes compilar e instalar todos los módulos en el orden correcto con un único comando:
 
 ```bash
-cd common-excepciones
-mvn clean install
-cd ..
+mvn clean install -DskipTests
 ```
+
+*(O si prefieres compilar únicamente la librería compartida: `cd common-excepciones && mvn clean install && cd ..`)*
 
 ### Paso 3: Ejecutar los Microservicios y Gateway
 
@@ -228,6 +219,7 @@ plataforma-turnos-odontologicos/
 │   └── api-gateway.txt
 ├── docker-compose.dev.yml               # Configuración de contenedores PostgreSQL
 ├── docker-compose.yml                   # Compose principal
+├── pom.xml                              # POM agregador raíz multimodular
 └── README.md                            # Guía completa del proyecto
 ```
 

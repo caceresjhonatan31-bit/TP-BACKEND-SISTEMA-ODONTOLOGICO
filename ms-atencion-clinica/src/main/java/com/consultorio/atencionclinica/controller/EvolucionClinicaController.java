@@ -12,13 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controlador REST para el registro y consulta de notas y evoluciones clínicas.
- *
- * Mapeo: /api/evoluciones
- * RN-15: Continuidad de sesiones clínicas.
- * RN-16: Confidencialidad de la historia clínica.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/evoluciones")

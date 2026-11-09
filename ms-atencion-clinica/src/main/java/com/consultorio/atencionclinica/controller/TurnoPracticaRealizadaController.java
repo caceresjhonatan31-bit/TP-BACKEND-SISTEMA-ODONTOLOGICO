@@ -12,13 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controlador REST para el registro y consulta de prácticas odontológicas efectivamente realizadas en turnos.
- *
- * Mapeo: /api/practicas-realizadas
- * RN-10, RN-11: Registro de prestaciones post-atención.
- * RN-16: Confidencialidad de los datos médicos.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/practicas-realizadas")

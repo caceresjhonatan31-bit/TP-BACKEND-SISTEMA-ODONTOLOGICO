@@ -13,12 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Servicio de negocio para el catálogo nomenclado de prácticas odontológicas.
- *
- * RN-10 / RN-11: Solo las prácticas con activo = true pueden usarse en actos médicos.
- * La baja es lógica: inhabilita la práctica para turnos futuros conservando el historial.
- */
 @Slf4j
 @Service
 @Transactional
@@ -32,9 +26,7 @@ public class PracticaOdontologicaService {
 
     // ── Creación ─────────────────────────────────────────────────────────────
 
-    /**
-     * Agrega una nueva práctica al nomenclador.
-     */
+
     public PracticaOdontologicaResponseDTO crearPractica(PracticaOdontologicaRequestDTO dto) {
         log.debug("Iniciando validación para crear práctica con código: {}", dto.getCodigoNomenclador());
 
@@ -83,9 +75,6 @@ public class PracticaOdontologicaService {
 
     // ── Actualización ─────────────────────────────────────────────────────────
 
-    /**
-     * Actualiza los datos descriptivos de una práctica del nomenclador.
-     */
     public PracticaOdontologicaResponseDTO actualizarPractica(Long id, PracticaOdontologicaRequestDTO dto) {
         log.debug("Iniciando validación para actualizar práctica ID: {}", id);
         PracticaOdontologica practica = buscarPorIdOLanzar(id);
@@ -107,7 +96,7 @@ public class PracticaOdontologicaService {
         return toResponseDTO(actualizada);
     }
 
-    // ── Baja / Reactivación lógica ───────────────────────────────────────────
+    // ── Baja lógica ───────────────────────────────────────────
 
     /** Inhabilita una práctica para nuevos turnos. */
     public void darDeBaja(Long id) {
@@ -138,9 +127,6 @@ public class PracticaOdontologicaService {
 
     // ── Validación inter-servicio ─────────────────────────────────────────────
 
-    /**
-     * Verifica si una práctica existe y está vigente (activo = true).
-     */
     @Transactional(readOnly = true)
     public ValidacionVigenciaResponseDTO validarPracticaActiva(Long id) {
         log.debug("Validando estado de vigencia para práctica ID: {}", id);

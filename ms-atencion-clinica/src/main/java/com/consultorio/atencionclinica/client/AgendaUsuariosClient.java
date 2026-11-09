@@ -10,17 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
-/**
- * Cliente HTTP para comunicarse con ms-agenda-usuarios.
- *
- * Patrón C4 Nivel 2: ms-atencion-clinica consulta a ms-agenda-usuarios
- * via REST para validar el estado del turno y el profesional interviniente
- * antes de registrar prácticas o evoluciones clínicas.
- *
- * Manejo de errores:
- *   - HTTP 404 → ResourceNotFoundException (el turno no existe en agenda).
- *   - HTTP 5xx / error de red → ExternalServiceException (servicio no disponible).
- */
 @Slf4j
 @Component
 public class AgendaUsuariosClient {
@@ -32,8 +21,6 @@ public class AgendaUsuariosClient {
     }
 
     /**
-     * Consulta los datos de un turno en ms-agenda-usuarios.
-     *
      * @param turnoId ID del turno a verificar.
      * @return {@link TurnoExternalDTO} con id, pacienteId, odontologoId y estado.
      * @throws ResourceNotFoundException si el turno no existe (404).

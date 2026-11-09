@@ -13,12 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Servicio de negocio para la gestión de pacientes.
- *
- * RN-13: Los pacientes no se eliminan físicamente. Se usa baja lógica (activo = false).
- *         Si un paciente regresa, se reactiva su ficha original en lugar de crear un duplicado.
- */
 @Slf4j
 @Service
 @Transactional
@@ -32,10 +26,7 @@ public class PacienteService {
 
     // ── Creación ─────────────────────────────────────────────────────────────
 
-    /**
-     * Registra un nuevo paciente en el sistema.
-     * Lanza {@link ConflictException} si ya existe un paciente con el mismo DNI.
-     */
+
     public PacienteResponseDTO crearPaciente(PacienteRequestDTO dto) {
         log.debug("Iniciando validaciones para registro de nuevo paciente");
 
@@ -89,10 +80,7 @@ public class PacienteService {
                 .toList();
     }
 
-    /**
-     * Búsqueda flexible por apellido o nombre (case-insensitive, coincidencia parcial).
-     * Requerida por F-01: "Busca ficha por nombre/apellido" (RN-13).
-     */
+
     @Transactional(readOnly = true)
     public List<PacienteResponseDTO> buscarPorNombreOApellido(String termino) {
         log.debug("Buscando pacientes por criterio de coincidencia de nombre/apellido");
@@ -105,9 +93,6 @@ public class PacienteService {
 
     // ── Actualización ─────────────────────────────────────────────────────────
 
-    /**
-     * Actualiza los datos de contacto de un paciente (teléfono, email).
-     */
     public PacienteResponseDTO actualizarPaciente(Long id, PacienteRequestDTO dto) {
         log.debug("Iniciando validación de datos para actualizar paciente ID: {}", id);
         Paciente paciente = buscarPorIdOLanzar(id);
@@ -128,11 +113,7 @@ public class PacienteService {
         return toResponseDTO(actualizado);
     }
 
-    // ── Baja lógica (RN-13) ───────────────────────────────────────────────────
-
-    /**
-     * Da de baja lógica al paciente (activo = false).
-     */
+  
     public void darDeBaja(Long id) {
         log.debug("Iniciando baja lógica para paciente ID: {}", id);
         Paciente paciente = buscarPorIdOLanzar(id);
@@ -145,9 +126,6 @@ public class PacienteService {
         log.info("Paciente ID {} dado de baja lógica exitosamente (RN-13)", id);
     }
 
-    /**
-     * Reactiva un paciente previamente dado de baja (RN-13).
-     */
     public PacienteResponseDTO reactivarPaciente(Long id) {
         log.debug("Iniciando reactivación para paciente ID: {}", id);
         Paciente paciente = buscarPorIdOLanzar(id);
@@ -163,9 +141,7 @@ public class PacienteService {
 
     // ── Validación inter-servicio ─────────────────────────────────────────────
 
-    /**
-     * Verifica si un paciente existe y está activo para ms-agenda-usuarios.
-     */
+
     @Transactional(readOnly = true)
     public ValidacionVigenciaResponseDTO validarPacienteActivo(Long id) {
         log.debug("Validando estado de vigencia para paciente ID: {}", id);

@@ -24,10 +24,6 @@ public class EvolucionClinicaRequestDTO {
     @Positive(message = "El ID del turno de inicio debe ser un número positivo")
     private Long turnoDesdeId;
 
-    /**
-     * Nullable: NULL = sesión única o tratamiento en curso (RN-15).
-     * Si se envía debe ser >= turnoDesdeId (validado en servicio + CHECK en DB).
-     */
     @Positive(message = "El ID del turno de cierre debe ser un número positivo")
     private Long turnoHastaId;
 

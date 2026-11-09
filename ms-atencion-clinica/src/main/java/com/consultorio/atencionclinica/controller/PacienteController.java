@@ -13,12 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controlador REST para la gestión de pacientes y su padrón.
- *
- * Mapeo: /api/pacientes
- * RN-13: Baja lógica y reactivación de pacientes sin pérdida de historial.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/pacientes")

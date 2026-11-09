@@ -32,7 +32,6 @@ logging:
     root: INFO
     com.consultorio.atencionclinica: DEBUG
 
-# URLs para comunicación inter-servicio
 clients:
   agenda-usuarios:
     url: http://localhost:8081

@@ -19,12 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Servicio de negocio para el registro y consulta de prácticas odontológicas efectivamente realizadas.
- *
- * RN-10, RN-11: Registro de prestaciones efectivas post-atención médica.
- * RN-16: Confidencialidad en el acceso al historial de prácticas del paciente.
- */
 @Slf4j
 @Service
 @Transactional
@@ -48,13 +42,6 @@ public class TurnoPracticaRealizadaService {
         this.agendaUsuariosClient = agendaUsuariosClient;
     }
 
-    /**
-     * Registra una práctica efectivamente realizada en una sesión médica.
-     * RN-10 / RN-11:
-     * 1. Verifica paciente activo.
-     * 2. Verifica práctica vigente (activo = true).
-     * 3. Verifica turno mediante AgendaUsuariosClient (existencia, correspondencia de paciente y odontólogo, estado válido).
-     */
     public TurnoPracticaRealizadaResponseDTO registrarPracticaRealizada(TurnoPracticaRealizadaRequestDTO dto) {
         log.debug("Iniciando validaciones RN-10 y RN-11 para asentar práctica ID {} en turno ID {} (paciente ID: {})",
                 dto.getPracticaId(), dto.getTurnoId(), dto.getPacienteId());
@@ -128,9 +115,6 @@ public class TurnoPracticaRealizadaService {
         return toResponseDTO(guardada);
     }
 
-    /**
-     * Lista todas las prácticas realizadas en un turno específico.
-     */
     @Transactional(readOnly = true)
     public List<TurnoPracticaRealizadaResponseDTO> listarPorTurno(Long turnoId) {
         log.debug("Consultando prácticas efectuadas en turno ID: {}", turnoId);
@@ -140,10 +124,6 @@ public class TurnoPracticaRealizadaService {
                 .toList();
     }
 
-    /**
-     * Lista las prácticas realizadas a un paciente.
-     * RN-16: Valida confidencialidad médica (solo ADMIN o el odontólogo que atendió al paciente).
-     */
     @Transactional(readOnly = true)
     public List<TurnoPracticaRealizadaResponseDTO> listarPorPaciente(Long pacienteId, Long odontologoIdSolicitante, boolean esAdmin) {
         log.debug("Verificando autorización RN-16 para consultar prácticas de paciente ID {} (odontologoId: {}, esAdmin: {})",

@@ -17,12 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Servicio de negocio para la gestión de notas y evoluciones clínicas.
- *
- * RN-15: Continuidad de sesiones clínicas (turnoHastaId >= turnoDesdeId).
- * RN-16: Confidencialidad en el acceso a diagnósticos y evoluciones médicas.
- */
+
 @Slf4j
 @Service
 @Transactional
@@ -43,11 +38,7 @@ public class EvolucionClinicaService {
         this.agendaUsuariosClient = agendaUsuariosClient;
     }
 
-    /**
-     * Registra una nueva evolución clínica.
-     * RN-15: Si turnoHastaId no es null, valida que turnoHastaId >= turnoDesdeId.
-     * Verifica la correspondencia del turno en ms-agenda-usuarios.
-     */
+
     public EvolucionClinicaResponseDTO registrarEvolucion(EvolucionClinicaRequestDTO dto) {
         log.debug("Iniciando validaciones para registrar evolución (paciente ID: {}, turnoDesdeId: {}, turnoHastaId: {})",
                 dto.getPacienteId(), dto.getTurnoDesdeId(), dto.getTurnoHastaId());
@@ -100,10 +91,6 @@ public class EvolucionClinicaService {
         return toResponseDTO(guardada);
     }
 
-    /**
-     * Actualiza una nota evolutiva existente.
-     * RN-15: Si se modifica el rango de turnos, valida coherencia.
-     */
     public EvolucionClinicaResponseDTO actualizarEvolucion(Long id, EvolucionClinicaRequestDTO dto) {
         log.debug("Iniciando validación para actualizar evolución clínica ID: {}", id);
 
@@ -127,10 +114,7 @@ public class EvolucionClinicaService {
         return toResponseDTO(actualizada);
     }
 
-    /**
-     * Consulta el historial clínico completo de un paciente.
-     * RN-16: Valida confidencialidad médica (solo ADMIN o el odontólogo que atendió al paciente).
-     */
+
     @Transactional(readOnly = true)
     public List<EvolucionClinicaResponseDTO> listarPorPaciente(Long pacienteId, Long odontologoIdSolicitante, boolean esAdmin) {
         log.debug("Verificando autorización RN-16 para consultar historial clínico de paciente ID {} (odontologoId: {}, esAdmin: {})",

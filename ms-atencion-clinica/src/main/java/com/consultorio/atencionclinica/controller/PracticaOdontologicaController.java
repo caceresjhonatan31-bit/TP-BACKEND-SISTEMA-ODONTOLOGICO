@@ -13,12 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controlador REST para el catálogo oficial de prácticas odontológicas (nomenclador).
- *
- * Mapeo: /api/practicas
- * RN-10, RN-11: Catálogo nomenclado y vigencia de prestaciones.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/practicas")
